@@ -1,13 +1,19 @@
 from django.db import models
 
+
 # Create your models here.
 class Post(models.Model):
     title = models.CharField(max_length=30)
-    content =models.TextField()
+    content = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    #author
+
+    # author
 
     def __str__(self):
         return f'[{self.pk}]{self.title}'
+
+    def get_absolute_url(self):
+        return f'/blog/{self.pk}'
+    # primarykey로써 id의 값을 쓰고 있어서 같게 나온다.
