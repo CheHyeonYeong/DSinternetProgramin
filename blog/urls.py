@@ -4,6 +4,6 @@ from . import views
 urlpatterns = [  # 서버 ip/blog/
     #    path('<int:pk>/', views.single_post_page),
     #    path('', views.index),  # 서버 ip/blog
-    path('<int:pk>/', views.PostDetail.as_view()),
+    path('<int:pk>/', views.PostDetail.as_view()), #pk로 인덱싱 가능 blog에 있음
     path('', views.PostList.as_view()),
 ]

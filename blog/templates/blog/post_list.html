@@ -4,7 +4,7 @@
             {% if post_list.exists %}
             {% for p in post_list %}
             <div class="card mb-4">
-                {% if p.head_image %}
+                {% if p.head_image %}  #헤더 이미지
                 <img class="card-img-top" src="{{ p.head_image.url }}" alt="{{p}}의 head image" />
                 {% else %}
                 <img class="card-img-top" src="https://picsum.photos/seed/{{p.id}}/800/200" alt="random image"/>
@@ -14,7 +14,7 @@
                     {% if p.hook_text %}
                     <h5 class="text-info">{{ p.hook_text }}</h5>
                     {% endif %}
-                    <p class="card-text">{{ p.content | truncatewords:45 }}</p>
+                    <p class="card-text">{{ p.content | truncatewords:45 }}</p>     #템플릿 필터 작성! | truncatechars:100
                     <a class="btn btn-primary" href="{{p.get_absolute_url}}">Read more →</a>
                     </div>
                 <div class="card-footer">

@@ -22,8 +22,12 @@ urlpatterns = [
     path('blog/', include('blog.urls')),  # 서버 ip/blog
     path('admin/', admin.site.urls),  # 서버 ip/admin
     path('', include('single_pages.urls')),  # 서버 ip/
-
 ]
+#url 생성 fbv 더보기
+#python manage.py makemigrations
+#python manage.py migrate
+#데베에 적용
 
 
+#헤더 이미지 하는거 요 아래것
 urlpatterns+= static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)     #서버IP/MEDIA

@@ -1,8 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import DetailView, ListView
-
 from .models import Post
-
 
 # Create your views here.
 class PostList(ListView):
@@ -15,10 +13,14 @@ class PostList(ListView):
 
 class PostDetail(DetailView):
     model = Post
+
+#포스트 상세 페이지 만들기
+
 # post_detail.html
 # '''
 # def index(request):
 #    posts = Post.objects.all().order_by('-pk')
+
 
 #   return render(request, 'blog/post_list.html',
 #                {
