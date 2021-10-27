@@ -1,11 +1,18 @@
 from django.shortcuts import render
 from django.views.generic import DetailView, ListView
-from .models import Post
+from .models import Post, Category
+
 
 # Create your views here.
 class PostList(ListView):
     model = Post
     ordering = '-pk'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(PostList, self).get_context_data()
+        context['categories'] = Category.objects.all()
+        context['no_category_post_count'] = Post.objects.filter(category=None).count()
+        return context
 
 
 #    template_name = 'blog/post_list.html'
@@ -14,7 +21,13 @@ class PostList(ListView):
 class PostDetail(DetailView):
     model = Post
 
-#포스트 상세 페이지 만들기
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(PostDetail, self).get_context_data()
+        context['categories'] = Category.objects.all()
+        context['no_category_post_count'] = Post.objects.filter(category=None).count()
+        return context
+
+# 포스트 상세 페이지 만들기
 
 # post_detail.html
 # '''
