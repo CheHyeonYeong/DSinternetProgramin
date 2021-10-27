@@ -1,5 +1,6 @@
 from django.db import models
 import os
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Post(models.Model):
@@ -20,8 +21,10 @@ class Post(models.Model):
     # manage.py
     # makemigrate'''
 
+    author = models.ForeignKey(User,null=True,on_delete=models.SET_NULL)
+
     def __str__(self):
-        return f'[{self.pk}]{self.title}'
+        return f'[{self.pk}]{self.title} :: {self.author}'
 
     def get_absolute_url(self):
         return f'/blog/{self.pk}'
