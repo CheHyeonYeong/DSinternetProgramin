@@ -1,12 +1,15 @@
 {% extends 'blog/base.html' %}
 {% block main_area %}
             <h1>
-                Blog {% if category %}<span class="badge bg-secondary ">{{category}}</span>{% endif %}
+                Blog
+                {% if category %}<span class="badge bg-secondary ">{{category}}</span>{% endif %}
+                {% if tag %}<i class="fas fa-tags"></i><span class="badge bg-secondary ">{{tag}}({{tag.post_set.count}})</span>{% endif %}
+
             </h1>
             {% if post_list.exists %}
             {% for p in post_list %}
             <div class="card mb-4" id="post-{{p.pk}}">
-                {% if p.head_image %}  #헤더 이미지
+                {% if p.head_image %}
                 <img class="card-img-top" src="{{ p.head_image.url }}" alt="{{p}}의 head image" />
                 {% else %}
                 <img class="card-img-top" src="https://picsum.photos/seed/{{p.id}}/800/200" alt="random image"/>
@@ -15,14 +18,22 @@
                     {% if p.category %}
                     <span class="badge bg-secondary float-right">{{p.category}}</span>
                     {% else %}
-                    <span class="badge bg-secondary">미분류</span>
                     {% endif %}
+                    <span class="badge bg-secondary">미분류</span>
                     <h2 class="card-title h4">{{ p.title | upper }}</h2>
                     {% if p.hook_text %}
                     <h5 class="text-info">{{ p.hook_text }}</h5>
                     {% endif %}
-                    <p class="card-text">{{ p.content | truncatewords:45 }}</p>     #템플릿 필터 작성! | truncatechars:100
-                    <a class="btn btn-primary" href="{{p.get_absolute_url}}">Read more →</a>
+                    <p class="card-text">{{ p.content | truncatewords:45 }}</p>
+
+                    {% if p.tags.exists %}
+                        <i class="fas fa-tags"></i>
+                        {% for tag in p.tags.all %}
+                    <a href="{{tag.get_absolute_url}}"><span class="badge bg-light">{{tag}}</span></a>
+                    {% endfor %}
+                    <br/><br/>
+                    {% endif %}
+                            <a class="btn btn-primary" href="{{p.get_absolute_url}}">Read more →</a>
                     </div>
                 <div class="card-footer">
                     <div class="small text-muted">{{ p.created_at | date:"20y-m-d h:m:s" }} by {{p.author | upper}}</div>
@@ -37,7 +48,6 @@
                 <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
                 <li class="page-item"><a class="page-link" href="#!">Older &rarr;</a></li>
             </ul>
-            </div>
 
 
 {% endblock %}

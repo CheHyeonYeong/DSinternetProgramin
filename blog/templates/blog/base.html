@@ -14,6 +14,7 @@
             <div class='col-md-8 col-lg-9' id="main-area">
                 {% block main_area %}
                 {% endblock %}
+            </div>
             <div class='col-md-4 col-lg-3'>
 
                     <!-- Search widget-->
@@ -35,7 +36,7 @@
                               <div class="col-sm-6">
                                   <ul class="list-unstyled mb-0">
                                       {% for c in categories %}
-                                      <li><a href="http://127.0.0.1:8000/blog/category/{{c.slug}}">{{c}} ({{c.post_set.count}})</a></li>
+                                      <li><a href="{{c.get_absolute_url}}">{{c}} ({{c.post_set.count}})</a></li>
                                         {% endfor %}
                                       <li><a href="http://127.0.0.1:8000/blog/category/no_category">미분류 ({{no_category_post_count}})</a></li>
                                   </ul>
@@ -46,7 +47,7 @@
           </div>
           </div>
           </div>
-          </div>
+
 
 
         <p>아직 작성하지 않았습니다.</p>

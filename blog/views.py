@@ -1,8 +1,20 @@
-from django.shortcuts import render
-from django.views.generic import DetailView, ListView
-from .models import Post, Category
+from django.shortcuts import render, redirect
+from django.views.generic import DetailView, ListView, CreateView
+from .models import Post, Category, Tag
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
+class PostCreate(LoginRequiredMixin, CreateView):
+    model=Post
+    fields= ['title', 'hook_text','content','head_image','file_upload','category','tags']
+
+    def form_valid(self, form):
+        current_user=self.request.user
+        if current_user.is_authenticated :
+            form.instance.author = current_user
+            return super(PostCreate,self).form_valid(form)
+        else:
+            return redirect('/blog/')
 # Create your views here.
 class PostList(ListView):
     model = Post
@@ -48,7 +60,18 @@ def category_page(request, slug):
                       'category': category
                   }
                   )
+def tag_page(request, slug):
+    tag = Tag.objects.get(slug=slug)
+    post_list = tag.post_set.all()
 
+    return render(request, 'blog/post_list.html',
+                  {
+                      'post_List': post_list,
+                      'categories': Category.objects.all(),
+                      'no_category_post_count': Post.objects.filter(category=None).count(),
+                      'tag': tag
+                  }
+                  )
 # '''
 # def index(request):
 #    posts = Post.objects.all().order_by('-pk')
