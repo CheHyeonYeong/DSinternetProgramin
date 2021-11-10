@@ -3,20 +3,21 @@ from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
 from .models import Post, Category, Tag
 
+
 # Create your tests here.
 class TestView(TestCase):
     def setUp(self):
         self.client = Client()
 
         self.user_james = User.objects.create_user(username='James', password='somepassword')
-        self.user_james.is_staff=True
+        self.user_james.is_staff = True
         self.user_james.save()
         self.user_trump = User.objects.create_user(username='Trump', password='somepassword')
 
         self.category_programming = Category.objects.create(name='programming', slug='programming')
         self.category_culture = Category.objects.create(name='culture', slug='culture')
 
-        self.tag_python_kor = Tag.objects.create(name='파이썬 공부',slug='파이썬-공부')
+        self.tag_python_kor = Tag.objects.create(name='파이썬 공부', slug='파이썬-공부')
         self.tag_python = Tag.objects.create(name='python', slug='python')
         self.tag_hello = Tag.objects.create(name='hello', slug='hello')
 
@@ -41,6 +42,7 @@ class TestView(TestCase):
         )
         self.post_003.tags.add(self.tag_python)
         self.post_003.tags.add(self.tag_python_kor)
+
     def navbar_test(self, soup):
         # 네비게이션바가 있다
         navbar = soup.nav
@@ -48,7 +50,7 @@ class TestView(TestCase):
         self.assertIn('Blog', navbar.text)
         self.assertIn('About Me', navbar.text)
 
-        logo = navbar.find('a', text='DaEun')
+        logo = navbar.find('a', text='Hyenyeong')
         self.assertEqual(logo.attrs['href'], '/')
 
         home = navbar.find('a', text='Home')
@@ -78,7 +80,7 @@ class TestView(TestCase):
         # 카테고리에 포함된 post만 포함하고 있는지
         main_area = soup.find('div', id='main-area')
         self.assertIn(self.category_programming.name, main_area.text)
-        self.assertNotIn(self.post_001.title,main_area.text)
+        self.assertNotIn(self.post_001.title, main_area.text)
         self.assertNotIn(self.post_002.title, main_area.text)
         self.assertNotIn(self.post_003.title, main_area.text)
 
@@ -91,7 +93,7 @@ class TestView(TestCase):
         self.navbar_test(soup)
         self.category_test(soup)
         # 태그 name을 포함하고 있는지
-        self.assertIn(self.tag_hello.name,soup.h1.text)
+        self.assertIn(self.tag_hello.name, soup.h1.text)
         # 카테고리에 포함된 post만 포함하고 있는지
         main_area = soup.find('div', id='main-area')
         self.assertIn(self.tag_hello.name, main_area.text)
@@ -121,12 +123,46 @@ class TestView(TestCase):
 
         self.client.post('/blog/create_post/',
                          {
-                             'title' : 'Post form 만들기',
-                             'content' :  "Post form 페이지 만들기"
+                             'title': 'Post form 만들기',
+                             'content': "Post form 페이지 만들기"
                          })
         last_post = Post.objects.last()
         self.assertEqual(last_post.title, "Post form 만들기")
         self.assertEqual(last_post.author.username, 'James')
+
+    def test_update_post(self):
+        # 로그인 하지 않은 경우
+        response = self.client.get('/blog/update_post/{self.post_003.pk}/')
+        self.assertNotEqual(response.status_code, 200)
+        # 로그인 했지만 작성자가 아닌 경우
+        self.assertNotIn(self.post_003.author, self.user_james)
+        self.client.login(username='James', password='somepassword')
+        response = self.client.get('/blog/update_post/{self.post_003.pk}/')
+        self.assertEqual(response.status_code, 403)
+        # 403 : forbidden 접근 권한 금지
+        # 로그인 했지만 작성자가 아닌경우
+        self.client.login(username='Trump', password='somepassword')
+        response = self.client.get('/blog/update_post/{self.post_003.pk}/')
+        self.assertEqual(response.status_code, 200)
+
+        # 수정페이지
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertEqual(soup.title.text, 'Edit Post - Blog')
+        main_area = soup.find('div', id='main-area')
+        self.assertNotIn('Edit Post', main_area.text)
+        # 실제 수정후 확인
+        response.self.client.post('/blog/update_post/{self.post_003.pk}/',
+                                  {'title': '세번째 포스트 수정',
+                                   'content': '안녕? 우리는 하나/... 반가와요',
+                                   'category': self.category_culture.pk
+                                   }, follow=True)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_area = soup.find('div', id='main-area')
+
+        self.asserIn('세번째 포스트 수정', main_area.text)
+        self.asserIn('안녕? 우리는 하나/... 반가와요', main_area.text)
+        self.asserIn(self.category_culture.name, main_area.text)
 
     def test_post_list(self):
         self.assertEqual(Post.objects.count(), 3)
@@ -184,7 +220,6 @@ class TestView(TestCase):
         self.assertIn('아직 게시물이 없습니다.', main_area.text)
 
     def test_post_detail(self):
-
         # 이 포스트의 url이 /blog/1
         self.assertEqual(self.post_001.get_absolute_url(), '/blog/1')
         # url에 의해 정상적으로 상세페이지를 불러오는가
