@@ -22,6 +22,8 @@ urlpatterns = [
     path('blog/', include('blog.urls')),  # 서버 ip/blog
     path('admin/', admin.site.urls),  # 서버 ip/admin
     path('', include('single_pages.urls')),  # 서버 ip/
+    path('markdownx/', include('markdownx.urls')),
+    path('accounts/', include('allauth.urls')),
 ]
 #url 생성 fbv 더보기
 #python manage.py makemigrations
