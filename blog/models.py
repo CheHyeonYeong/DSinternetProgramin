@@ -57,7 +57,7 @@ class Post(models.Model):
         return f'[{self.pk}]{self.title} :: {self.author}'
 
     def get_absolute_url(self):
-        return f'/blog/{self.pk}'
+        return f'/blog/{self.pk}/'
 
     # primarykey로써 id의 값을 쓰고 있어서 같게 나온다.
 
@@ -81,4 +81,4 @@ class Comment(models.Model):
         return f'{self.author}::{self.content}'
 
     def get_absolute_url(self):
-        return f'{self.post.get_absolute.url()}#comment-{self.pk}'
+        return f'{self.post.get_absolute_url()}#comment-{self.pk}'

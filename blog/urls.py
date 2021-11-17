@@ -9,6 +9,6 @@ urlpatterns = [  # 서버 ip/blog/
     path('tag/<str:slug>', views.tag_page),
     path('category/<str:slug>', views.category_page),
     path('<int:pk>/', views.PostDetail.as_view()),  # pk로 인덱싱 가능 blog에 있음
-
+    path('<int:pk>/new_comment/', views.new_comment),
     path('', views.PostList.as_view()),
 ]
